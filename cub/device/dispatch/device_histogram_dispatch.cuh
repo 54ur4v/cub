@@ -165,7 +165,10 @@ template <
     int                             ACTIVE_CHANNELS,            ///< Number of channels actively being histogrammed
     typename                        InputIterator,              ///< The input iterator type \iterator.  Must have a value type that is assignable to <tt>unsigned char</tt>
     typename                        HistoCounter,               ///< Integer type for counting sample occurrences per histogram bin
-    typename                        Offset>                     ///< Signed integer type for global offsets
+    typename                        Offset,                     ///< Signed integer type for global offsets
+
+    // XXX: [sauravm] This fork of CUB disregards tuning policies for grid mapping.
+    GridMappingStrategy             GRID_MAPPING = GRID_MAPPING_EVEN_SHARE>
 struct DeviceHistogramDispatch
 {
     /******************************************************************************
@@ -180,7 +183,8 @@ struct DeviceHistogramDispatch
                 (HISTO_ALGORITHM == DEVICE_HISTO_SORT) ? 128 : 256,
                 (HISTO_ALGORITHM == DEVICE_HISTO_SORT) ? 12 : (30 / ACTIVE_CHANNELS),
                 HISTO_ALGORITHM,
-                (HISTO_ALGORITHM == DEVICE_HISTO_SORT) ? GRID_MAPPING_DYNAMIC : GRID_MAPPING_EVEN_SHARE>
+                //(HISTO_ALGORITHM == DEVICE_HISTO_SORT) ? GRID_MAPPING_DYNAMIC : GRID_MAPPING_EVEN_SHARE>
+                GRID_MAPPING>
             HistoRegionPolicy;
     };
 
@@ -192,7 +196,8 @@ struct DeviceHistogramDispatch
                 128,
                 (HISTO_ALGORITHM == DEVICE_HISTO_SORT) ? 20 : (22 / ACTIVE_CHANNELS),
                 HISTO_ALGORITHM,
-                (HISTO_ALGORITHM == DEVICE_HISTO_SORT) ? GRID_MAPPING_DYNAMIC : GRID_MAPPING_EVEN_SHARE>
+                //(HISTO_ALGORITHM == DEVICE_HISTO_SORT) ? GRID_MAPPING_DYNAMIC : GRID_MAPPING_EVEN_SHARE>
+                GRID_MAPPING>
             HistoRegionPolicy;
     };
 
@@ -204,7 +209,8 @@ struct DeviceHistogramDispatch
                 128,
                 (HISTO_ALGORITHM == DEVICE_HISTO_SORT) ? 21 : (23 / ACTIVE_CHANNELS),
                 HISTO_ALGORITHM,
-                GRID_MAPPING_DYNAMIC>
+                //GRID_MAPPING_DYNAMIC>
+                GRID_MAPPING>
             HistoRegionPolicy;
     };
 
@@ -216,7 +222,8 @@ struct DeviceHistogramDispatch
                 128,
                 7,
                 DEVICE_HISTO_SORT,        // (use sort regardless because g-atomics are unsupported and s-atomics are perf-useless)
-                GRID_MAPPING_EVEN_SHARE>
+                //GRID_MAPPING_EVEN_SHARE>
+                GRID_MAPPING>
             HistoRegionPolicy;
     };
 
